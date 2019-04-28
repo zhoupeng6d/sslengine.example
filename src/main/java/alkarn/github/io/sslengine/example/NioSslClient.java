@@ -19,12 +19,12 @@ import javax.net.ssl.SSLSession;
  * in order to establish connection with the server.
  * <p/>
  * When the connection between the client and the object is established, {@link NioSslClient} provides
- * a public write and read method, in order to communicate with its peer. 
+ * a public write and read method, in order to communicate with its peer.
  *
  * @author <a href="mailto:alex.a.karnezis@gmail.com">Alex Karnezis</a>
  */
 public class NioSslClient extends NioSslPeer {
-	
+
     /**
      * The remote address of the server this client is configured to connect to.
      */
@@ -60,7 +60,8 @@ public class NioSslClient extends NioSslPeer {
     	this.port = port;
 
         SSLContext context = SSLContext.getInstance(protocol);
-        context.init(createKeyManagers("./src/main/resources/client.jks", "storepass", "keypass"), createTrustManagers("./src/main/resources/trustedCerts.jks", "storepass"), new SecureRandom());
+        context.init(createKeyManagers("./src/main/resources/client.jks", "123456", "123456"), createTrustManagers("./src/main/resources/ca.jks", "123456"), new SecureRandom());
+        //context.init(null, createTrustManagers("./src/main/resources/ca.jks", "123456"), new SecureRandom());
         engine = context.createSSLEngine(remoteAddress, port);
         engine.setUseClientMode(true);
 
@@ -160,7 +161,7 @@ public class NioSslClient extends NioSslPeer {
      * <p/>
      * Just like {@link NioSslClient#read(SocketChannel, SSLEngine)} it uses inner class' socket channel
      * and engine and should not be used by the client. {@link NioSslClient#read()} should be called instead.
-     * 
+     *
      * @param message - message to be sent to the server.
      * @param engine - the engine used for encryption/decryption of the data exchanged between the two peers.
      * @throws Exception

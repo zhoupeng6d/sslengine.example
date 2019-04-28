@@ -23,7 +23,7 @@ import javax.net.ssl.SSLSession;
  * <p/>
  * After initialization {@link NioSslServer#start()} should be called so the server starts to listen to
  * new connection requests. At this point, start is blocking, so, in order to be able to gracefully stop
- * the server, a {@link Runnable} containing a server object should be created. This runnable should 
+ * the server, a {@link Runnable} containing a server object should be created. This runnable should
  * start the server in its run method and also provide a stop method, which will call {@link NioSslServer#stop()}.
  * </p>
  * NioSslServer makes use of Java NIO, and specifically listens to new connection requests with a {@link ServerSocketChannel}, which will
@@ -32,12 +32,12 @@ import javax.net.ssl.SSLSession;
  * @author <a href="mailto:alex.a.karnezis@gmail.com">Alex Karnezis</a>
  */
 public class NioSslServer extends NioSslPeer {
-	
+
 	/**
 	 * Declares if the server is active to serve and create new connections.
 	 */
 	private boolean active;
-	
+
     /**
      * The context will be initialized with a specific SSL/TLS protocol and will then be used
      * to create {@link SSLEngine} classes for each new connection that arrives to the server.
@@ -61,7 +61,7 @@ public class NioSslServer extends NioSslPeer {
     public NioSslServer(String protocol, String hostAddress, int port) throws Exception {
 
         context = SSLContext.getInstance(protocol);
-        context.init(createKeyManagers("./src/main/resources/server.jks", "storepass", "keypass"), createTrustManagers("./src/main/resources/trustedCerts.jks", "storepass"), new SecureRandom());
+        context.init(createKeyManagers("./src/main/resources/server.jks", "123456", "123456"), createTrustManagers("./src/main/resources/ca.jks", "123456"), new SecureRandom());
 
         SSLSession dummySession = context.createSSLEngine().getSession();
         myAppData = ByteBuffer.allocate(dummySession.getApplicationBufferSize());
@@ -75,9 +75,9 @@ public class NioSslServer extends NioSslPeer {
         serverSocketChannel.configureBlocking(false);
         serverSocketChannel.socket().bind(new InetSocketAddress(hostAddress, port));
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-        
+
         active = true;
-        
+
     }
 
     /**
@@ -108,11 +108,11 @@ public class NioSslServer extends NioSslPeer {
                 }
             }
         }
-        
+
         log.debug("Goodbye!");
-        
+
     }
-    
+
     /**
      * Sets the server to an inactive state, in order to exit the reading loop in {@link NioSslServer#start()}
      * and also wakes up the selector, which may be in select() blocking state.
@@ -141,6 +141,7 @@ public class NioSslServer extends NioSslPeer {
 
         SSLEngine engine = context.createSSLEngine();
         engine.setUseClientMode(false);
+        engine.setNeedClientAuth(true);
         engine.beginHandshake();
 
         if (doHandshake(socketChannel, engine)) {
@@ -252,5 +253,5 @@ public class NioSslServer extends NioSslPeer {
     private boolean isActive() {
         return active;
     }
-    
+
 }
