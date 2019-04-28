@@ -62,7 +62,7 @@ public class NioSslClient extends NioSslPeer {
         SSLContext context = SSLContext.getInstance(protocol);
         context.init(createKeyManagers("./src/main/resources/client.jks", "123456", "123456"), createTrustManagers("./src/main/resources/ca.jks", "123456"), new SecureRandom());
         //context.init(null, createTrustManagers("./src/main/resources/ca.jks", "123456"), new SecureRandom());
-        engine = context.createSSLEngine(remoteAddress, port);
+        engine = context.createSSLEngine();
         engine.setUseClientMode(true);
 
         SSLSession session = engine.getSession();

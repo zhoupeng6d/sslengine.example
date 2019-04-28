@@ -26,7 +26,7 @@ public class Demo {
 	public static void main(String[] args) throws Exception {
 		Demo demo = new Demo();
 		Thread.sleep(1000);	// Give the server some time to start.
+		//Thread.sleep(20000);
 		demo.runDemo();
-		Thread.sleep(20000);
 	}
 }
